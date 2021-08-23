@@ -23,7 +23,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.microbench.channel.EmbeddedChannelWriteReleaseHandlerContext;
 import io.netty.microbench.util.AbstractMicrobenchmark;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.Promise;
 import io.netty.util.concurrent.PromiseNotifier;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -102,14 +101,14 @@ public class Http2FrameWriterDataBenchmark extends AbstractMicrobenchmark {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     public void newWriter() {
-        writer.writeData(ctx, 3, payload.retain(), padding, true, ctx.newPromise());
+        writer.writeData(ctx, 3, payload.retain(), padding, true);
         ctx.flush();
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     public void oldWriter() {
-        oldWriter.writeData(ctx, 3, payload.retain(), padding, true, ctx.newPromise());
+        oldWriter.writeData(ctx, 3, payload.retain(), padding, true);
         ctx.flush();
     }
 
@@ -119,9 +118,9 @@ public class Http2FrameWriterDataBenchmark extends AbstractMicrobenchmark {
         private final int maxFrameSize = DEFAULT_MAX_FRAME_SIZE;
         @Override
         public Future<Void> writeData(ChannelHandlerContext ctx, int streamId, ByteBuf data,
-                                      int padding, boolean endStream, Promise<Void> promise) {
+                                      int padding, boolean endStream) {
             final Http2CodecUtil.SimpleChannelPromiseAggregator promiseAggregator =
-                    new Http2CodecUtil.SimpleChannelPromiseAggregator(promise, ctx.executor());
+                    new Http2CodecUtil.SimpleChannelPromiseAggregator(ctx.newPromise(), ctx.executor());
             final DataFrameHeader header = new DataFrameHeader(ctx, streamId);
             boolean needToReleaseHeaders = true;
             boolean needToReleaseData = true;
