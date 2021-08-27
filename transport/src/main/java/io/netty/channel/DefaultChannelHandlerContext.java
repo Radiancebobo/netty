@@ -843,7 +843,6 @@ final class DefaultChannelHandlerContext implements ChannelHandlerContext, Resou
             executor.execute(runnable);
             return true;
         } catch (Throwable cause) {
-            cause.printStackTrace();
             try {
                 if (msg != null) {
                     ReferenceCountUtil.release(msg);
@@ -941,7 +940,6 @@ final class DefaultChannelHandlerContext implements ChannelHandlerContext, Resou
             ctx = null;
             msg = null;
             promise = null;
-            //new Throwable().printStackTrace();
             handle.recycle(this);
         }
 
